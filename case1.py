@@ -1,0 +1,37 @@
+import http.client
+import json
+
+def get_weather(api_key, location):
+    conn = http.client.HTTPSConnection("api.openweathermap.org")
+    endpoint = f"/data/2.5/weather?q={location}&appid={api_key}&units=metric"
+    conn.request("GET", endpoint)
+    response = conn.getresponse()
+    if response.status == 200:
+        data = json.loads(response.read().decode("utf-8"))
+        return {
+            "temperature": data["main"]["temp"],
+            "weather_condition": data["weather"][0]["description"],
+            "humidity": data["main"]["humidity"],
+            "wind_speed": data["wind"]["speed"]
+        }
+    else:
+        return {"error": "Failed to retrieve weather data"}
+
+def display_weather(weather_data):
+    print("Current Weather Data:")
+    print(f"Temperature: {weather_data['temperature']}°C")
+    print(f"Weather Condition: {weather_data['weather_condition']}")
+    print(f"Humidity: {weather_data['humidity']}%")
+    print(f"Wind Speed: {weather_data['wind_speed']} m/s")
+
+def main():
+    api_key = input("Enter your OpenWeatherMap API key: ")
+    location = input("Enter the location (city name): ")
+    weather_data = get_weather(api_key, location)
+    if "error" in weather_data:
+        print(weather_data["error"])
+    else:
+        display_weather(weather_data)
+
+if __name__ == "__main__":
+    main()
