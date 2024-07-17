@@ -1,37 +1,31 @@
-import http.client
-import json
-
-def get_weather(api_key, location):
-    conn = http.client.HTTPSConnection("api.openweathermap.org")
-    endpoint = f"/data/2.5/weather?q={location}&appid={api_key}&units=metric"
-    conn.request("GET", endpoint)
-    response = conn.getresponse()
-    if response.status == 200:
-        data = json.loads(response.read().decode("utf-8"))
-        return {
-            "temperature": data["main"]["temp"],
-            "weather_condition": data["weather"][0]["description"],
-            "humidity": data["main"]["humidity"],
-            "wind_speed": data["wind"]["speed"]
-        }
+# Function to fetch weather data from OpenWeatherMap API
+def fetch_weather_data(location):
+    api_key = " yU4lMZH7wc1F1qbNVFhmaGGSVuQ46rPi"
+    api_url = f" https://api.tomorrow.io/v4/weather/forecast?location=42.3478,-71.0466"
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        data = response.json()
+        return data
     else:
-        return {"error": "Failed to retrieve weather data"}
+        return None
 
-def display_weather(weather_data):
-    print("Current Weather Data:")
-    print(f"Temperature: {weather_data['temperature']}°C")
-    print(f"Weather Condition: {weather_data['weather_condition']}")
-    print(f"Humidity: {weather_data['humidity']}%")
-    print(f"Wind Speed: {weather_data['wind_speed']} m/s")
+# Function to display weather data to the user
+def display_weather_data(data):
+    if data:
+        print(f"Current Weather in {data['name']}:")
+        print(f"Temperature: {data['main']['temp']}°C")
+        print(f"Weather Conditions: {data['weather'][0]['description']}")
+        print(f"Humidity: {data['main']['humidity']}%")
+        print(f"Wind Speed: {data['wind']['speed']} m/s")
+    else:
+        print("Error fetching weather data.")
 
+# Main function to handle user input and display weather data
 def main():
-    api_key = input("Enter your OpenWeatherMap API key: ")
-    location = input("Enter the location (city name): ")
-    weather_data = get_weather(api_key, location)
-    if "error" in weather_data:
-        print(weather_data["error"])
-    else:
-        display_weather(weather_data)
+    location = input("Enter a city name or coordinates: ")
+    data = fetch_weather_data(location)
+    display_weather_data(data)
 
+# Run the main function
 if __name__ == "__main__":
     main()
